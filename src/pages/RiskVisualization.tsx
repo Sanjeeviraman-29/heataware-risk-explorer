@@ -1,30 +1,112 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Thermometer, Droplets, AlertTriangle, Users, Calendar } from "lucide-react";
+import { MapPin, Thermometer, Droplets, AlertTriangle, Users, Calendar, Loader2 } from "lucide-react";
 import { HeatMap } from "@/components/HeatMap";
 import { MetricsCards } from "@/components/MetricsCards";
 import { HistoricalChart } from "@/components/HistoricalChart";
+import { weatherApi, getCurrentLocation, WeatherData } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
 
 const RiskVisualization = () => {
   const [location, setLocation] = useState("");
   const [selectedArea, setSelectedArea] = useState("Downtown Metro");
+  const [weatherData, setWeatherData] = useState<WeatherData | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const { toast } = useToast();
 
-  const riskData = {
+  // Default mock data for areas (since we don't have multiple location data)
+  const defaultAreas = [
+    { name: "Downtown Metro", risk: "extreme", population: 45000, temp: 38 },
+    { name: "Industrial District", risk: "high", population: 12000, temp: 36 },
+    { name: "Residential North", risk: "moderate", population: 30000, temp: 34 },
+    { name: "Green Hills", risk: "low", population: 8000, temp: 31 }
+  ];
+
+  // Try to get user's location on component mount
+  useEffect(() => {
+    const getInitialLocation = async () => {
+      try {
+        const coords = await getCurrentLocation();
+        setLoading(true);
+        const data = await weatherApi.getCurrentWeatherByCoords(coords.lat, coords.lon);
+        setWeatherData(data);
+        setError(null);
+      } catch (err) {
+        // If geolocation fails, try default city
+        console.log('Geolocation failed, trying default city');
+        handleSearch('New York');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    getInitialLocation();
+  }, []);
+
+  const handleSearch = async (searchLocation?: string) => {
+    const searchTerm = searchLocation || location;
+    if (!searchTerm.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter a city name or ZIP code",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    setError(null);
+    
+    try {
+      const data = await weatherApi.getCurrentWeather(searchTerm);
+      setWeatherData(data);
+      toast({
+        title: "Success",
+        description: `Weather data updated for ${data.location}`,
+      });
+    } catch (err) {
+      const errorMessage = err instanceof Error ? err.message : 'Failed to fetch weather data';
+      setError(errorMessage);
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleSearch();
+    }
+  };
+
+  // Use real data if available, otherwise use mock data
+  const riskData = weatherData ? {
+    current: {
+      temperature: weatherData.current.temperature,
+      humidity: weatherData.current.humidity,
+      heatIndex: weatherData.current.heatIndex,
+      riskLevel: weatherData.current.riskLevel
+    },
+    areas: defaultAreas.map(area => ({
+      ...area,
+      temp: area.name === "Downtown Metro" ? weatherData.current.temperature : area.temp
+    }))
+  } : {
     current: {
       temperature: 38,
       humidity: 65,
-      heatIndex: "Extreme",
+      heatIndex: 38,
       riskLevel: "extreme" as const
     },
-    areas: [
-      { name: "Downtown Metro", risk: "extreme", population: 45000, temp: 38 },
-      { name: "Industrial District", risk: "high", population: 12000, temp: 36 },
-      { name: "Residential North", risk: "moderate", population: 30000, temp: 34 },
-      { name: "Green Hills", risk: "low", population: 8000, temp: 31 }
-    ]
+    areas: defaultAreas
   };
 
   const getRiskColor = (risk: string) => {
@@ -48,11 +130,21 @@ const RiskVisualization = () => {
               placeholder="Enter city or ZIP code"
               value={location}
               onChange={(e) => setLocation(e.target.value)}
+              onKeyPress={handleKeyPress}
               className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
+              disabled={loading}
             />
-            <Button variant="secondary">
-              <MapPin className="h-4 w-4" />
-              Search
+            <Button 
+              onClick={() => handleSearch()}
+              disabled={loading}
+              variant="secondary"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <MapPin className="h-4 w-4" />
+              )}
+              {loading ? 'Searching...' : 'Search'}
             </Button>
           </div>
         </div>

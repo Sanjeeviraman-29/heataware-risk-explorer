@@ -1,73 +1,127 @@
-# Welcome to your Lovable project
+# HeatAware - Urban Heat Risk Visualization Platform
 
-## Project info
+A comprehensive web application for visualizing urban heatwave risks and providing mitigation recommendations. Built with React/TypeScript frontend and Node.js/Express backend.
 
-**URL**: https://lovable.dev/projects/3001d52b-9d25-4ef1-b28f-7e1f2dd4ef9a
+## 🌟 Features
 
-## How can I edit this code?
+- **Real-time Weather Data**: Integration with OpenWeatherMap API
+- **Heat Risk Assessment**: Automated heat index calculation and risk level classification
+- **Interactive Visualizations**: Color-coded heat risk maps and trend charts
+- **Mitigation Strategies**: Comprehensive recommendations for heat safety
+- **Location Support**: Search by city name or use geolocation
+- **Contact Forms**: Backend form handling with data persistence
+- **Responsive Design**: Works seamlessly on desktop and mobile devices
 
-There are several ways of editing your application.
+## 🚀 Quick Start
 
-**Use Lovable**
+### Prerequisites
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/3001d52b-9d25-4ef1-b28f-7e1f2dd4ef9a) and start prompting.
+- Node.js (v14 or higher)
+- npm or yarn
+- OpenWeatherMap API key (free at https://openweathermap.org/api)
 
-Changes made via Lovable will be committed automatically to this repo.
+### Installation
 
-**Use your preferred IDE**
+1. **Get OpenWeatherMap API Key**:
+   - Sign up at [OpenWeatherMap](https://openweathermap.org/api)
+   - Get your free API key from the dashboard
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+2. **Setup Backend**:
+   ```bash
+   cd backend
+   npm install
+   cp .env.example .env
+   # Edit .env and add your API key
+   npm run dev
+   ```
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+3. **Setup Frontend**:
+   ```bash
+   # In project root
+   npm install
+   npm run dev
+   ```
 
-Follow these steps:
+4. **Test the Application**:
+   - Open http://localhost:5173
+   - Navigate to "Risk Visualization"
+   - Search for a city (e.g., "New York")
+   - View real-time heat risk data
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## 🎨 Heat Risk Levels
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+| Risk Level | Heat Index | Color | Actions |
+|------------|------------|-------|---------|
+| **Low** | < 30°C | 🟢 Green | Normal activities |
+| **Moderate** | 30-35°C | 🟡 Yellow | Caution advised |
+| **High** | 35-40°C | 🟠 Orange | Limit outdoor activities |
+| **Extreme** | > 40°C | 🔴 Red | Emergency protocols |
 
-# Step 3: Install the necessary dependencies.
-npm i
+## 🛠️ Technology Stack
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+### Frontend
+- React 18 + TypeScript
+- Vite for build tooling
+- shadcn/ui components
+- Tailwind CSS for styling
+- React Query for API state management
+
+### Backend
+- Node.js + Express
+- OpenWeatherMap API integration
+- JSON file storage for contacts
+- CORS enabled for development
+- Comprehensive error handling
+
+## 📁 Project Structure
+
+```
+heataware/
+├── backend/              # Node.js backend
+│   ├── routes/          # API endpoints
+│   ├── data/            # JSON storage
+│   └── server.js        # Main server
+├── src/                 # React frontend
+│   ├── pages/          # Page components
+│   ├── components/     # UI components
+│   ├── services/       # API layer
+│   └── hooks/          # Custom hooks
+└── README.md           # This file
 ```
 
-**Edit a file directly in GitHub**
+## 🌐 API Endpoints
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+### Weather Data
+- `GET /api/weather?city=CityName` - Current weather
+- `GET /api/weather/forecast?city=CityName` - 5-day forecast
 
-**Use GitHub Codespaces**
+### Mitigation
+- `GET /api/mitigation/strategies` - Heat safety strategies
+- `GET /api/mitigation/resources` - Emergency resources
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+### Contact
+- `POST /api/contact` - Submit contact form
+- `POST /api/contact/feedback` - Submit feedback
 
-## What technologies are used for this project?
+## 📄 Documentation
 
-This project is built with:
+- [Setup Guide](./SETUP_GUIDE.md) - Detailed installation instructions
+- [Backend API](./backend/README.md) - API documentation
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+## 🤝 Contributing
 
-## How can I deploy this project?
+We welcome contributions! Please feel free to submit issues, feature requests, or pull requests.
 
-Simply open [Lovable](https://lovable.dev/projects/3001d52b-9d25-4ef1-b28f-7e1f2dd4ef9a) and click on Share -> Publish.
+## 📜 License
 
-## Can I connect a custom domain to my Lovable project?
+This project is licensed under the MIT License.
 
-Yes, you can!
+## 🆘 Support
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+- Check the [Setup Guide](./SETUP_GUIDE.md) for common issues
+- Open an issue on GitHub for bugs or feature requests
+- Contact us through the application's contact form
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+---
+
+**Made with ❤️ for urban heat safety**

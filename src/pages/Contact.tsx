@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,10 +14,75 @@ import {
   Shield,
   Thermometer,
   Globe,
-  FileText
+  FileText,
+  Loader2,
+  Check
 } from "lucide-react";
+import { contactApi, ContactSubmission } from "@/services/api";
+import { useToast } from "@/hooks/use-toast";
 
 const Contact = () => {
+  const [formData, setFormData] = useState<ContactSubmission>({
+    name: '',
+    email: '',
+    subject: '',
+    message: '',
+    priority: 'normal'
+  });
+  const [loading, setLoading] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+  const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    
+    // Validate form
+    if (!formData.name || !formData.email || !formData.subject || !formData.message) {
+      toast({
+        title: "Error",
+        description: "Please fill in all required fields",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    setLoading(true);
+    
+    try {
+      const result = await contactApi.submitContact(formData);
+      setSubmitted(true);
+      toast({
+        title: "Success",
+        description: "Your message has been sent successfully!",
+      });
+      
+      // Reset form
+      setFormData({
+        name: '',
+        email: '',
+        subject: '',
+        message: '',
+        priority: 'normal'
+      });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: error instanceof Error ? error.message : "Failed to send message",
+        variant: "destructive"
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const resources = [
     {
       category: "Government Resources",
@@ -102,44 +168,82 @@ const Contact = () => {
                 Have questions about our data or need support implementing heat mitigation strategies?
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
-                  <label className="text-sm font-medium mb-2 block">First Name</label>
-                  <Input placeholder="Enter your first name" />
+                  <label className="text-sm font-medium mb-2 block">Full Name *</label>
+                  <Input 
+                    name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
+                    placeholder="Enter your full name"
+                    disabled={loading}
+                    required
+                  />
                 </div>
+                
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Last Name</label>
-                  <Input placeholder="Enter your last name" />
+                  <label className="text-sm font-medium mb-2 block">Email *</label>
+                  <Input 
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="your.email@example.com"
+                    disabled={loading}
+                    required
+                  />
                 </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Email</label>
-                <Input type="email" placeholder="your.email@example.com" />
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Organization</label>
-                <Input placeholder="Your organization (optional)" />
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Subject</label>
-                <Input placeholder="What's this about?" />
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Message</label>
-                <Textarea 
-                  placeholder="Tell us how we can help you..."
-                  className="min-h-[120px]"
-                />
-              </div>
-              
-              <Button variant="hero" className="w-full">
-                Send Message
-              </Button>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Subject *</label>
+                  <Input 
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    placeholder="What's this about?"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Message *</label>
+                  <Textarea 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Tell us how we can help you..."
+                    className="min-h-[120px]"
+                    disabled={loading}
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit"
+                  variant="hero" 
+                  className="w-full"
+                  disabled={loading}
+                >
+                  {loading ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Sending...
+                    </>
+                  ) : submitted ? (
+                    <>
+                      <Check className="h-4 w-4 mr-2" />
+                      Message Sent!
+                    </>
+                  ) : (
+                    <>
+                      <Mail className="h-4 w-4 mr-2" />
+                      Send Message
+                    </>
+                  )}
+                </Button>
+              </form>
             </CardContent>
           </Card>
 
