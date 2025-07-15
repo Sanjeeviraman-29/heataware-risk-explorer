@@ -2,39 +2,61 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
+/* HeatAware Design System - Heat-themed color palette
+All colors MUST be HSL for proper theming.
 */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 40 15% 98%;
+    --foreground: 15 15% 8%;
 
     --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card-foreground: 15 15% 8%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover-foreground: 15 15% 8%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Heat-themed primary colors */
+    --primary: 15 100% 50%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 25 100% 60%;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Cooling secondary colors */
+    --secondary: 200 50% 94%;
+    --secondary-foreground: 15 15% 8%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 40 10% 95%;
+    --muted-foreground: 15 10% 40%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent with heat energy */
+    --accent: 35 100% 65%;
+    --accent-foreground: 0 0% 100%;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Heat warning colors */
+    --destructive: 0 84% 55%;
+    --destructive-foreground: 0 0% 100%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Heat risk levels */
+    --risk-low: 120 60% 50%;
+    --risk-moderate: 50 100% 60%;
+    --risk-high: 25 100% 55%;
+    --risk-extreme: 0 85% 50%;
+
+    --border: 40 15% 88%;
+    --input: 40 15% 88%;
+    --ring: 15 100% 50%;
+
+    /* Heat gradients */
+    --gradient-heat: linear-gradient(135deg, hsl(15 100% 50%), hsl(35 100% 65%));
+    --gradient-temperature: linear-gradient(180deg, hsl(0 85% 50%), hsl(35 100% 65%));
+    --gradient-cooling: linear-gradient(135deg, hsl(200 80% 60%), hsl(180 60% 70%));
+    --gradient-hero: linear-gradient(135deg, hsl(15 100% 50% / 0.9), hsl(35 100% 65% / 0.8));
+
+    /* Shadows with heat glow */
+    --shadow-heat: 0 10px 30px -10px hsl(15 100% 50% / 0.3);
+    --shadow-glow: 0 0 40px hsl(25 100% 60% / 0.4);
+    --shadow-card: 0 4px 20px hsl(15 20% 30% / 0.1);
 
     --radius: 0.5rem;
 
