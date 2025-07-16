@@ -3,7 +3,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { MapPin, Thermometer, Droplets, AlertTriangle, Users, Calendar } from "lucide-react";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import { MapPin, Thermometer, Droplets, AlertTriangle, Users, Calendar, ChevronDown, Search, Bell, Download } from "lucide-react";
+import { Link } from "react-router-dom";
 import { HeatMap } from "@/components/HeatMap";
 import { MetricsCards } from "@/components/MetricsCards";
 import { HistoricalChart } from "@/components/HistoricalChart";
@@ -11,6 +13,8 @@ import { HistoricalChart } from "@/components/HistoricalChart";
 const RiskVisualization = () => {
   const [location, setLocation] = useState("");
   const [selectedArea, setSelectedArea] = useState("Downtown Metro");
+  const [isSearching, setIsSearching] = useState(false);
+  const [showCalculation, setShowCalculation] = useState(false);
 
   const riskData = {
     current: {
@@ -37,22 +41,49 @@ const RiskVisualization = () => {
     }
   };
 
+  const handleSearch = () => {
+    setIsSearching(true);
+    // Simulate API call
+    setTimeout(() => {
+      setIsSearching(false);
+    }, 1500);
+  };
+
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-heat text-white py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-4">Heat Risk Visualization</h1>
-          <div className="flex gap-4 max-w-md">
-            <Input
-              placeholder="Enter city or ZIP code"
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="bg-white/10 border-white/20 text-white placeholder:text-white/70"
-            />
-            <Button variant="secondary">
-              <MapPin className="h-4 w-4" />
-              Search
+      <div className="bg-gradient-heat text-white py-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-accent/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <h1 className="text-3xl font-bold mb-4 animate-fade-in-up">Heat Risk Visualization</h1>
+          <p className="text-lg opacity-90 mb-6 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
+            Enter your location to visualize heat risks and get personalized insights
+          </p>
+          <div className="flex gap-4 max-w-lg animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            <div className="flex-1 relative">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-white/70" />
+              <Input
+                placeholder="Enter city or ZIP code"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                className="bg-white/10 border-white/20 text-white placeholder:text-white/70 pl-10 focus:bg-white/20 transition-all duration-300"
+                onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
+              />
+            </div>
+            <Button 
+              variant="secondary" 
+              onClick={handleSearch}
+              disabled={isSearching}
+              className="min-w-[100px] transform transition-all duration-300 hover:scale-105"
+            >
+              {isSearching ? (
+                <div className="animate-spin h-4 w-4 border-2 border-current border-t-transparent rounded-full" />
+              ) : (
+                <>
+                  <MapPin className="h-4 w-4 mr-2" />
+                  Search
+                </>
+              )}
             </Button>
           </div>
         </div>
@@ -63,7 +94,7 @@ const RiskVisualization = () => {
           {/* Main Map and Data */}
           <div className="lg:col-span-2 space-y-6">
             {/* Interactive Heat Map */}
-            <Card>
+            <Card className="animate-scale-in shadow-elegant">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Thermometer className="h-5 w-5 text-primary" />
@@ -75,6 +106,29 @@ const RiskVisualization = () => {
               </CardHeader>
               <CardContent>
                 <HeatMap onAreaSelect={setSelectedArea} selectedArea={selectedArea} />
+                
+                {/* How Risk is Calculated - Expandable */}
+                <Collapsible open={showCalculation} onOpenChange={setShowCalculation} className="mt-6">
+                  <CollapsibleTrigger asChild>
+                    <Button variant="outline" className="w-full justify-between">
+                      How this risk is calculated
+                      <ChevronDown className={`h-4 w-4 transition-transform duration-300 ${showCalculation ? 'rotate-180' : ''}`} />
+                    </Button>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className="mt-4 animate-fade-in-up">
+                    <div className="p-4 bg-muted/50 rounded-lg space-y-3">
+                      <h4 className="font-semibold">Risk Calculation Factors:</h4>
+                      <ul className="space-y-2 text-sm text-muted-foreground">
+                        <li>🌡️ <strong>Temperature:</strong> Current and historical temperature data</li>
+                        <li>💧 <strong>Humidity:</strong> Relative humidity levels affecting heat index</li>
+                        <li>🏢 <strong>Urban density:</strong> Building density and heat island effects</li>
+                        <li>🌳 <strong>Green coverage:</strong> Parks, trees, and cooling infrastructure</li>
+                        <li>👥 <strong>Population vulnerability:</strong> Age demographics and health factors</li>
+                        <li>📊 <strong>Historical patterns:</strong> Past heatwave frequency and intensity</li>
+                      </ul>
+                    </div>
+                  </CollapsibleContent>
+                </Collapsible>
               </CardContent>
             </Card>
 
@@ -141,18 +195,25 @@ const RiskVisualization = () => {
             </Card>
 
             {/* Quick Actions */}
-            <Card>
+            <Card className="animate-slide-up" style={{ animationDelay: '0.4s' }}>
               <CardHeader>
                 <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>
+                  Take action based on your risk assessment
+                </CardDescription>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button variant="hero" className="w-full">
-                  View Mitigation Tips
+                <Button variant="hero" className="w-full transform transition-all duration-300 hover:scale-105" asChild>
+                  <Link to="/mitigation">
+                    View Mitigation Tips
+                  </Link>
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full group hover:shadow-card-hover transition-all duration-300">
+                  <Download className="h-4 w-4 mr-2 group-hover:animate-bounce" />
                   Download Report
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button variant="outline" className="w-full group hover:shadow-card-hover transition-all duration-300">
+                  <Bell className="h-4 w-4 mr-2 group-hover:animate-pulse" />
                   Set Alerts
                 </Button>
               </CardContent>

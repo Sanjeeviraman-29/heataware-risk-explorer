@@ -57,6 +57,12 @@ All colors MUST be HSL for proper theming.
     --shadow-heat: 0 10px 30px -10px hsl(15 100% 50% / 0.3);
     --shadow-glow: 0 0 40px hsl(25 100% 60% / 0.4);
     --shadow-card: 0 4px 20px hsl(15 20% 30% / 0.1);
+    --shadow-card-hover: 0 8px 40px hsl(15 30% 20% / 0.15);
+    --shadow-elegant: 0 20px 60px -10px hsl(15 100% 50% / 0.2);
+
+    /* Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 
     --radius: 0.5rem;
 

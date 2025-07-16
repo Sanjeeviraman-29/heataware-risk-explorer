@@ -191,10 +191,11 @@ const Mitigation = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
-      <div className="bg-gradient-cooling text-white py-8">
-        <div className="container mx-auto px-4">
-          <h1 className="text-3xl font-bold mb-4">Heat Mitigation Strategies</h1>
-          <p className="text-lg opacity-90">
+      <div className="bg-gradient-cooling text-white py-8 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/20 to-green-500/20"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <h1 className="text-3xl font-bold mb-4 animate-fade-in-up">Smart Mitigation Tips</h1>
+          <p className="text-lg opacity-90 animate-fade-in-up" style={{ animationDelay: '0.2s' }}>
             Evidence-based solutions to reduce urban heat and build climate resilience
           </p>
         </div>
@@ -202,19 +203,19 @@ const Mitigation = () => {
 
       <div className="container mx-auto px-4 py-8">
         {/* Filter Section */}
-        <div className="mb-8">
+        <div className="mb-8 animate-fade-in-up">
           <h2 className="text-xl font-semibold mb-4">Filter by Risk Level</h2>
           <div className="flex flex-wrap gap-3">
-            <Badge className="bg-muted text-muted-foreground cursor-pointer hover:bg-muted/80">
+            <Badge className="bg-muted text-muted-foreground cursor-pointer hover:bg-muted/80 transform transition-all duration-300 hover:scale-105">
               All Levels
             </Badge>
-            <Badge className="bg-risk-extreme text-white cursor-pointer hover:bg-risk-extreme/80">
+            <Badge className="bg-risk-extreme text-white cursor-pointer hover:bg-risk-extreme/80 transform transition-all duration-300 hover:scale-105">
               Extreme Risk
             </Badge>
-            <Badge className="bg-risk-high text-white cursor-pointer hover:bg-risk-high/80">
+            <Badge className="bg-risk-high text-white cursor-pointer hover:bg-risk-high/80 transform transition-all duration-300 hover:scale-105">
               High Risk
             </Badge>
-            <Badge className="bg-risk-moderate text-white cursor-pointer hover:bg-risk-moderate/80">
+            <Badge className="bg-risk-moderate text-white cursor-pointer hover:bg-risk-moderate/80 transform transition-all duration-300 hover:scale-105">
               Moderate Risk
             </Badge>
           </div>
@@ -222,12 +223,35 @@ const Mitigation = () => {
 
         {/* Mitigation Strategies Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {mitigationStrategies.map((strategy) => {
+          {mitigationStrategies.map((strategy, index) => {
             const Icon = strategy.icon;
             const isOpen = openCards.includes(strategy.id);
 
+            // Create colorful gradients for each card
+            const cardGradients = [
+              'from-green-500/10 to-emerald-500/10 border-green-200/50',
+              'from-blue-500/10 to-cyan-500/10 border-blue-200/50',
+              'from-purple-500/10 to-violet-500/10 border-purple-200/50',
+              'from-orange-500/10 to-amber-500/10 border-orange-200/50',
+              'from-pink-500/10 to-rose-500/10 border-pink-200/50',
+              'from-indigo-500/10 to-blue-500/10 border-indigo-200/50'
+            ];
+
+            const iconGradients = [
+              'bg-gradient-to-br from-green-500 to-emerald-600',
+              'bg-gradient-to-br from-blue-500 to-cyan-600',
+              'bg-gradient-to-br from-purple-500 to-violet-600',
+              'bg-gradient-to-br from-orange-500 to-amber-600',
+              'bg-gradient-to-br from-pink-500 to-rose-600',
+              'bg-gradient-to-br from-indigo-500 to-blue-600'
+            ];
+
             return (
-              <Card key={strategy.id} className="transition-all hover:shadow-card-hover">
+              <Card 
+                key={strategy.id} 
+                className={`transition-all duration-500 hover:shadow-elegant transform hover:-translate-y-2 animate-slide-up bg-gradient-to-br ${cardGradients[index % cardGradients.length]} backdrop-blur-sm`}
+                style={{ animationDelay: `${index * 0.1}s` }}
+              >
                 <Collapsible>
                   <CollapsibleTrigger 
                     className="w-full text-left"
@@ -236,50 +260,50 @@ const Mitigation = () => {
                     <CardHeader className="pb-4">
                       <div className="flex items-start justify-between">
                         <div className="flex items-center gap-3">
-                          <div className="p-2 rounded-lg bg-primary/10">
-                            <Icon className="h-6 w-6 text-primary" />
+                          <div className={`p-3 rounded-lg ${iconGradients[index % iconGradients.length]} transform transition-all duration-300 hover:scale-110`}>
+                            <Icon className="h-6 w-6 text-white" />
                           </div>
                           <div>
-                            <CardTitle className="text-lg">{strategy.title}</CardTitle>
+                            <CardTitle className="text-lg hover:text-primary transition-colors duration-300">{strategy.title}</CardTitle>
                             <CardDescription className="mt-1">
                               {strategy.description}
                             </CardDescription>
                           </div>
                         </div>
                         {isOpen ? (
-                          <ChevronUp className="h-5 w-5 text-muted-foreground" />
+                          <ChevronUp className="h-5 w-5 text-muted-foreground transition-transform duration-300" />
                         ) : (
-                          <ChevronDown className="h-5 w-5 text-muted-foreground" />
+                          <ChevronDown className="h-5 w-5 text-muted-foreground transition-transform duration-300" />
                         )}
                       </div>
                       
                       {/* Strategy Metrics */}
                       <div className="flex flex-wrap gap-2 pt-2">
-                        <Badge className={getImpactColor(strategy.impact)}>
-                          Impact: {strategy.impact}
+                        <Badge className={`${getImpactColor(strategy.impact)} transform transition-all duration-300 hover:scale-105`}>
+                          💪 Impact: {strategy.impact}
                         </Badge>
-                        <Badge variant="outline">
-                          Cost: {strategy.cost}
+                        <Badge variant="outline" className="transform transition-all duration-300 hover:scale-105">
+                          💰 Cost: {strategy.cost}
                         </Badge>
-                        <Badge variant="outline">
-                          {strategy.timeframe}
+                        <Badge variant="outline" className="transform transition-all duration-300 hover:scale-105">
+                          ⏱️ {strategy.timeframe}
                         </Badge>
                       </div>
                     </CardHeader>
                   </CollapsibleTrigger>
 
-                  <CollapsibleContent>
+                  <CollapsibleContent className="animate-fade-in-up">
                     <CardContent className="space-y-6">
                       {/* Benefits */}
                       <div>
                         <h4 className="font-medium mb-3 flex items-center gap-2">
-                          <Shield className="h-4 w-4 text-primary" />
-                          Key Benefits
+                          <Shield className="h-4 w-4 text-green-600" />
+                          🌟 Key Benefits
                         </h4>
                         <ul className="space-y-2">
-                          {strategy.benefits.map((benefit, index) => (
-                            <li key={index} className="flex items-start gap-2 text-sm">
-                              <div className="w-1.5 h-1.5 rounded-full bg-primary mt-2 flex-shrink-0" />
+                          {strategy.benefits.map((benefit, benefitIndex) => (
+                            <li key={benefitIndex} className="flex items-start gap-2 text-sm animate-fade-in-left" style={{ animationDelay: `${benefitIndex * 0.1}s` }}>
+                              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-green-500 to-emerald-500 mt-2 flex-shrink-0" />
                               {benefit}
                             </li>
                           ))}
@@ -289,13 +313,13 @@ const Mitigation = () => {
                       {/* Action Items */}
                       <div>
                         <h4 className="font-medium mb-3 flex items-center gap-2">
-                          <Leaf className="h-4 w-4 text-primary" />
-                          Implementation Actions
+                          <Leaf className="h-4 w-4 text-blue-600" />
+                          🛠️ Implementation Actions
                         </h4>
                         <ul className="space-y-2">
-                          {strategy.actions.map((action, index) => (
-                            <li key={index} className="flex items-start gap-2 text-sm">
-                              <div className="w-1.5 h-1.5 rounded-full bg-accent mt-2 flex-shrink-0" />
+                          {strategy.actions.map((action, actionIndex) => (
+                            <li key={actionIndex} className="flex items-start gap-2 text-sm animate-fade-in-left" style={{ animationDelay: `${actionIndex * 0.1}s` }}>
+                              <div className="w-1.5 h-1.5 rounded-full bg-gradient-to-r from-blue-500 to-cyan-500 mt-2 flex-shrink-0" />
                               {action}
                             </li>
                           ))}
@@ -304,12 +328,15 @@ const Mitigation = () => {
 
                       {/* Real-world Examples */}
                       <div>
-                        <h4 className="font-medium mb-2">Real-world Examples</h4>
-                        <p className="text-sm text-muted-foreground">{strategy.examples}</p>
+                        <h4 className="font-medium mb-2 flex items-center gap-2">
+                          <Lightbulb className="h-4 w-4 text-yellow-600" />
+                          🌍 Real-world Examples
+                        </h4>
+                        <p className="text-sm text-muted-foreground bg-gradient-to-r from-yellow-50 to-orange-50 p-3 rounded-lg border border-yellow-200/50">{strategy.examples}</p>
                       </div>
 
-                      <Button variant="hero" className="w-full">
-                        Get Implementation Guide
+                      <Button variant="hero" className="w-full transform transition-all duration-300 hover:scale-105 hover:shadow-elegant">
+                        📋 Get Implementation Guide
                       </Button>
                     </CardContent>
                   </CollapsibleContent>
@@ -320,19 +347,19 @@ const Mitigation = () => {
         </div>
 
         {/* Call to Action */}
-        <div className="mt-12 text-center">
-          <Card className="max-w-2xl mx-auto">
+        <div className="mt-12 text-center animate-fade-in-up">
+          <Card className="max-w-2xl mx-auto bg-gradient-to-br from-primary/10 to-accent/10 border-primary/20 shadow-elegant">
             <CardContent className="pt-6">
-              <h3 className="text-xl font-semibold mb-4">Ready to Take Action?</h3>
+              <h3 className="text-xl font-semibold mb-4">🚀 Ready to Take Action?</h3>
               <p className="text-muted-foreground mb-6">
                 Connect with local officials and community organizations to implement these strategies in your area.
               </p>
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                <Button variant="hero">
-                  Contact Local Officials
+                <Button variant="hero" className="transform transition-all duration-300 hover:scale-105 hover:shadow-elegant">
+                  📞 Contact Local Officials
                 </Button>
-                <Button variant="outline">
-                  Join Community Groups
+                <Button variant="outline" className="transform transition-all duration-300 hover:scale-105">
+                  🤝 Join Community Groups
                 </Button>
               </div>
             </CardContent>
