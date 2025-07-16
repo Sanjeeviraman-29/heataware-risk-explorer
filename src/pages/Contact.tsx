@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,10 +14,78 @@ import {
   Shield,
   Thermometer,
   Globe,
-  FileText
+  FileText,
+  Loader2,
+  CheckCircle
 } from "lucide-react";
+import { contactApi } from "@/services/api";
+import { useToast } from "@/components/ui/use-toast";
 
 const Contact = () => {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    organization: "",
+    subject: "",
+    message: ""
+  });
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitStatus, setSubmitStatus] = useState<"idle" | "success" | "error">("idle");
+  const { toast } = useToast();
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setSubmitStatus("idle");
+    
+    try {
+      const response = await contactApi.submitContactForm({
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        email: formData.email,
+        organization: formData.organization,
+        message: formData.message,
+        type: "general"
+      });
+      
+      if (response.success) {
+        setSubmitStatus("success");
+        toast({
+          title: "Message sent successfully!",
+          description: response.message,
+          duration: 5000,
+        });
+        
+        // Reset form
+        setFormData({
+          firstName: "",
+          lastName: "",
+          email: "",
+          organization: "",
+          subject: "",
+          message: ""
+        });
+      } else {
+        throw new Error('Failed to send message');
+      }
+    } catch (error) {
+      setSubmitStatus("error");
+      toast({
+        title: "Error sending message",
+        description: error instanceof Error ? error.message : "Please try again later",
+        variant: "destructive",
+        duration: 5000,
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const resources = [
     {
       category: "Government Resources",
@@ -102,44 +171,90 @@ const Contact = () => {
                 Have questions about our data or need support implementing heat mitigation strategies?
               </CardDescription>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="text-sm font-medium mb-2 block">First Name</label>
-                  <Input placeholder="Enter your first name" />
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">First Name</label>
+                    <Input 
+                      name="firstName"
+                      value={formData.firstName}
+                      onChange={handleInputChange}
+                      placeholder="Enter your first name"
+                      required
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium mb-2 block">Last Name</label>
+                    <Input 
+                      name="lastName"
+                      value={formData.lastName}
+                      onChange={handleInputChange}
+                      placeholder="Enter your last name"
+                      required
+                    />
+                  </div>
                 </div>
+                
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Last Name</label>
-                  <Input placeholder="Enter your last name" />
+                  <label className="text-sm font-medium mb-2 block">Email</label>
+                  <Input 
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleInputChange}
+                    placeholder="your.email@example.com"
+                    required
+                  />
                 </div>
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Email</label>
-                <Input type="email" placeholder="your.email@example.com" />
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Organization</label>
-                <Input placeholder="Your organization (optional)" />
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Subject</label>
-                <Input placeholder="What's this about?" />
-              </div>
-              
-              <div>
-                <label className="text-sm font-medium mb-2 block">Message</label>
-                <Textarea 
-                  placeholder="Tell us how we can help you..."
-                  className="min-h-[120px]"
-                />
-              </div>
-              
-              <Button variant="hero" className="w-full">
-                Send Message
-              </Button>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Organization</label>
+                  <Input 
+                    name="organization"
+                    value={formData.organization}
+                    onChange={handleInputChange}
+                    placeholder="Your organization (optional)"
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Subject</label>
+                  <Input 
+                    name="subject"
+                    value={formData.subject}
+                    onChange={handleInputChange}
+                    placeholder="What's this about?"
+                    required
+                  />
+                </div>
+                
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Message</label>
+                  <Textarea 
+                    name="message"
+                    value={formData.message}
+                    onChange={handleInputChange}
+                    placeholder="Tell us how we can help you..."
+                    className="min-h-[120px]"
+                    required
+                  />
+                </div>
+                
+                <Button 
+                  type="submit" 
+                  variant="hero" 
+                  className="w-full"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? (
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                  ) : submitStatus === "success" ? (
+                    <CheckCircle className="h-4 w-4 mr-2" />
+                  ) : null}
+                  {isSubmitting ? "Sending..." : submitStatus === "success" ? "Sent!" : "Send Message"}
+                </Button>
+              </form>
             </CardContent>
           </Card>
 

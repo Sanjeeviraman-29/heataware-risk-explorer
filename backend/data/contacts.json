@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1752638088421,
+    "name": "John Doe",
+    "email": "john@example.com",
+    "organization": "",
+    "message": "Test message",
+    "type": "general",
+    "timestamp": "2025-07-16T03:54:48.421Z",
+    "status": "new"
+  }
+]
