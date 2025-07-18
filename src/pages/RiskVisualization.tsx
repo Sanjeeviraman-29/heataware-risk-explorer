@@ -9,6 +9,7 @@ import { Link } from "react-router-dom";
 import { HeatMap } from "@/components/HeatMap";
 import { MetricsCards } from "@/components/MetricsCards";
 import { HistoricalChart } from "@/components/HistoricalChart";
+import { LiveMetrics } from "@/components/LiveMetrics";
 
 const RiskVisualization = () => {
   const [location, setLocation] = useState("");
@@ -89,23 +90,36 @@ const RiskVisualization = () => {
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Live Environmental Data */}
+        <LiveMetrics />
+
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Map and Data */}
           <div className="lg:col-span-2 space-y-6">
             {/* Interactive Heat Map */}
-            <Card className="animate-scale-in shadow-elegant">
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                  <Thermometer className="h-5 w-5 text-primary" />
-                  Heat Risk Map
-                </CardTitle>
-                <CardDescription>
-                  Click on areas to view detailed risk information
-                </CardDescription>
+            <Card className="animate-scale-in shadow-xl border-0 overflow-hidden">
+              <CardHeader className="bg-gradient-to-r from-blue-50 to-cyan-50 border-b">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <CardTitle className="flex items-center gap-2">
+                      <MapPin className="h-5 w-5 text-blue-600" />
+                      Satellite Heat Map - {location || "Metropolitan Area"}
+                    </CardTitle>
+                    <CardDescription>
+                      High-resolution thermal imaging • Updated 15 min ago via NOAA GOES-16
+                    </CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <span className="text-xs text-green-600 font-medium">LIVE</span>
+                  </div>
+                </div>
               </CardHeader>
-              <CardContent>
-                <HeatMap onAreaSelect={setSelectedArea} selectedArea={selectedArea} />
+              <CardContent className="p-0">
+                <div className="p-6">
+                  <HeatMap onAreaSelect={setSelectedArea} selectedArea={selectedArea} />
+                </div>
                 
                 {/* How Risk is Calculated - Expandable */}
                 <Collapsible open={showCalculation} onOpenChange={setShowCalculation} className="mt-6">

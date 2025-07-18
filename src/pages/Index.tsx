@@ -30,10 +30,10 @@ const Index = () => {
   ];
 
   const stats = [
-    { value: "38°C", label: "Current Peak Temperature", trend: "up" },
-    { value: "125K", label: "People in High-Risk Areas", trend: "stable" },
-    { value: "15%", label: "Urban Heat Increase", trend: "up" },
-    { value: "12", label: "Extreme Risk Zones", trend: "up" },
+    { value: "42.3°C", label: "Peak Temperature Today", trend: "up", change: "+3.2°", icon: Thermometer },
+    { value: "2.4M", label: "People at Risk", trend: "stable", change: "85% of metro area", icon: Users },
+    { value: "27%", label: "Heat Island Effect", trend: "up", change: "+4.8% this year", icon: BarChart3 },
+    { value: "18", label: "Critical Alert Zones", trend: "up", change: "6 new this week", icon: Shield },
   ];
 
   return (
@@ -93,9 +93,9 @@ const Index = () => {
                 Heatwaves
               </span>
             </h1>
-            <p className="text-xl md:text-2xl mb-8 text-white/90 animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
-              Visualize heat risks around you and get smart mitigation tips for 
-              building climate-resilient communities.
+            <p className="text-xl md:text-2xl mb-8 text-white/90 animate-fade-in-up leading-relaxed" style={{ animationDelay: '0.4s' }}>
+              Real-time heat risk intelligence powered by AI, satellite data, and urban sensors. 
+              Protect communities and build climate resilience with evidence-based insights.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up" style={{ animationDelay: '0.6s' }}>
               <Button variant="hero" size="lg" className="text-lg px-8 transform transition-all duration-300 hover:scale-105 hover:shadow-elegant" asChild>
@@ -115,24 +115,46 @@ const Index = () => {
       </section>
 
       {/* Stats Section */}
-      <section className="py-16 bg-muted/30">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
-              <Card key={index} className="text-center group hover:shadow-card-hover transition-all duration-300 animate-scale-in border-0 shadow-md" style={{ animationDelay: `${index * 0.1}s` }}>
-                <CardContent className="pt-6">
-                  <div className="text-3xl font-bold text-primary mb-2 group-hover:scale-110 transition-transform duration-300">{stat.value}</div>
-                  <div className="text-sm text-muted-foreground">{stat.label}</div>
-                  {stat.trend === "up" && (
-                    <div className="mt-2">
-                      <Badge variant="destructive" className="text-xs">
-                        ↗ Trending Up
+      <section className="py-20 bg-white relative">
+        <div className="absolute inset-0 bg-gradient-to-br from-orange-50/50 to-red-50/30"></div>
+        <div className="container mx-auto px-4 relative z-10">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Real-Time Heat Intelligence</h2>
+            <p className="text-lg text-muted-foreground">Live data from weather stations, satellites, and urban sensors</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {stats.map((stat, index) => {
+              const Icon = stat.icon;
+              return (
+                <Card key={index} className="group hover:shadow-elegant transition-all duration-500 transform hover:-translate-y-1 animate-scale-in border-0 bg-white/80 backdrop-blur-sm" style={{ animationDelay: `${index * 0.1}s` }}>
+                  <CardContent className="pt-6">
+                    <div className="flex items-start justify-between mb-4">
+                      <div className="p-3 rounded-lg bg-gradient-heat/10 group-hover:bg-gradient-heat/20 transition-colors">
+                        <Icon className="h-6 w-6 text-primary" />
+                      </div>
+                      <Badge variant={stat.trend === "up" ? "destructive" : "secondary"} className="text-xs">
+                        {stat.trend === "up" ? "↗" : "→"} Live
                       </Badge>
                     </div>
-                  )}
-                </CardContent>
-              </Card>
-            ))}
+                    
+                    <div className="text-3xl font-bold text-primary mb-2 group-hover:scale-105 transition-transform duration-300">
+                      {stat.value}
+                    </div>
+                    <div className="text-sm font-medium text-foreground mb-2">{stat.label}</div>
+                    <div className="text-xs text-muted-foreground">{stat.change}</div>
+                  </CardContent>
+                </Card>
+              );
+            })}
+          </div>
+          
+          {/* Real-time indicator */}
+          <div className="mt-8 text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm">
+              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              Last updated: 2 minutes ago
+            </div>
           </div>
         </div>
       </section>
