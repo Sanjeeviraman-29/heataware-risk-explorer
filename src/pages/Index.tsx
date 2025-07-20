@@ -104,7 +104,7 @@ const Index = () => {
                   <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
                 </Link>
               </Button>
-              <Button variant="outline" size="lg" className="text-lg px-8 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
+              <Button variant="hero" size="lg" className="text-lg px-8 transform transition-all duration-300 hover:scale-105 hover:shadow-elegant" asChild>
                 <Link to="/dashboard">
                   View Analytics
                 </Link>
