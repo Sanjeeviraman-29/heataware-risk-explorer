@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -10,6 +10,7 @@ import { HeatMap } from "@/components/HeatMap";
 import { MetricsCards } from "@/components/MetricsCards";
 import { HistoricalChart } from "@/components/HistoricalChart";
 import { LiveMetrics } from "@/components/LiveMetrics";
+import { fetchHeatwaveData, getLocationData, type HeatwaveRisk } from "@/lib/supabase";
 
 type RiskLevel = "low" | "moderate" | "high" | "extreme";
 
@@ -34,6 +35,8 @@ const RiskVisualization = () => {
   const [selectedArea, setSelectedArea] = useState("Downtown Metro");
   const [isSearching, setIsSearching] = useState(false);
   const [showCalculation, setShowCalculation] = useState(false);
+  const [heatwaveData, setHeatwaveData] = useState<HeatwaveRisk[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   // Comprehensive Indian pin code database (sample of major cities)
   const areaDatabase = {
@@ -190,6 +193,58 @@ const RiskVisualization = () => {
   const [currentAreaData, setCurrentAreaData] = useState<AreaData>(areaDatabase.default);
   const riskData = currentAreaData;
 
+  // Load initial data from Supabase
+  useEffect(() => {
+    const loadInitialData = async () => {
+      setIsLoading(true);
+      try {
+        const data = await fetchHeatwaveData();
+        setHeatwaveData(data);
+        
+        // If we have real data, use it to update the display
+        if (data.length > 0) {
+          const latestData = data[0];
+          const mappedRiskLevel = mapRiskLevel(latestData.risk_level);
+          setCurrentAreaData({
+            current: {
+              temperature: latestData.temperature,
+              humidity: latestData.humidity || 65,
+              heatIndex: latestData.risk_level,
+              riskLevel: mappedRiskLevel
+            },
+            areas: [
+              {
+                name: latestData.location,
+                risk: mappedRiskLevel,
+                population: latestData.population || 50000,
+                temp: latestData.temperature
+              }
+            ],
+            location: latestData.location
+          });
+          setSelectedArea(latestData.location);
+        }
+      } catch (error) {
+        console.error('Failed to load initial data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadInitialData();
+  }, []);
+
+  // Helper function to map risk levels
+  const mapRiskLevel = (riskLevel: string): RiskLevel => {
+    switch (riskLevel.toLowerCase()) {
+      case 'extreme': return 'extreme';
+      case 'high': return 'high';
+      case 'medium': return 'moderate';
+      case 'low': return 'low';
+      default: return 'moderate';
+    }
+  };
+
   const getRiskColor = (risk: string) => {
     switch (risk) {
       case "extreme": return "risk-extreme";
@@ -200,18 +255,51 @@ const RiskVisualization = () => {
     }
   };
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     if (!location.trim()) return;
     
     setIsSearching(true);
     
-    // Simulate API call and lookup area data
-    setTimeout(() => {
+    try {
+      // First try to get data from Supabase
+      const supabaseData = await getLocationData(location);
+      
+      if (supabaseData) {
+        // Use real data from Supabase
+        const mappedRiskLevel = mapRiskLevel(supabaseData.risk_level);
+        setCurrentAreaData({
+          current: {
+            temperature: supabaseData.temperature,
+            humidity: supabaseData.humidity || 65,
+            heatIndex: supabaseData.risk_level,
+            riskLevel: mappedRiskLevel
+          },
+          areas: [
+            {
+              name: supabaseData.location,
+              risk: mappedRiskLevel,
+              population: supabaseData.population || 50000,
+              temp: supabaseData.temperature
+            }
+          ],
+          location: supabaseData.location
+        });
+        setSelectedArea(supabaseData.location);
+      } else {
+        // Fallback to dummy data if not found in Supabase
+        const areaData = areaDatabase[location as keyof typeof areaDatabase] || areaDatabase.default;
+        setCurrentAreaData(areaData);
+        setSelectedArea(areaData.areas[0].name);
+      }
+    } catch (error) {
+      console.error('Search error:', error);
+      // Fallback to dummy data on error
       const areaData = areaDatabase[location as keyof typeof areaDatabase] || areaDatabase.default;
       setCurrentAreaData(areaData);
-      setSelectedArea(areaData.areas[0].name); // Select first area as default
+      setSelectedArea(areaData.areas[0].name);
+    } finally {
       setIsSearching(false);
-    }, 1500);
+    }
   };
 
   return (
