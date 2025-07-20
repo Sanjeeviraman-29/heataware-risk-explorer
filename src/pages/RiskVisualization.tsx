@@ -11,26 +11,76 @@ import { MetricsCards } from "@/components/MetricsCards";
 import { HistoricalChart } from "@/components/HistoricalChart";
 import { LiveMetrics } from "@/components/LiveMetrics";
 
+type RiskLevel = "low" | "moderate" | "high" | "extreme";
+
+type AreaData = {
+  current: {
+    temperature: number;
+    humidity: number;
+    heatIndex: string;
+    riskLevel: RiskLevel;
+  };
+  areas: {
+    name: string;
+    risk: string;
+    population: number;
+    temp: number;
+  }[];
+  location: string;
+};
+
 const RiskVisualization = () => {
   const [location, setLocation] = useState("");
   const [selectedArea, setSelectedArea] = useState("Downtown Metro");
   const [isSearching, setIsSearching] = useState(false);
   const [showCalculation, setShowCalculation] = useState(false);
 
-  const riskData = {
-    current: {
-      temperature: 38,
-      humidity: 65,
-      heatIndex: "Extreme",
-      riskLevel: "extreme" as const
+  // Area data for different pin codes/locations
+  const areaDatabase = {
+    "10001": { // NYC Downtown
+      current: { temperature: 39, humidity: 72, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Financial District", risk: "extreme", population: 48000, temp: 39 },
+        { name: "SoHo", risk: "high", population: 15000, temp: 37 },
+        { name: "Greenwich Village", risk: "moderate", population: 28000, temp: 35 },
+        { name: "Battery Park", risk: "low", population: 6000, temp: 32 }
+      ],
+      location: "New York City, NY"
     },
-    areas: [
-      { name: "Downtown Metro", risk: "extreme", population: 45000, temp: 38 },
-      { name: "Industrial District", risk: "high", population: 12000, temp: 36 },
-      { name: "Residential North", risk: "moderate", population: 30000, temp: 34 },
-      { name: "Green Hills", risk: "low", population: 8000, temp: 31 }
-    ]
+    "90210": { // Beverly Hills
+      current: { temperature: 35, humidity: 45, heatIndex: "High", riskLevel: "high" as const },
+      areas: [
+        { name: "Beverly Hills Center", risk: "high", population: 25000, temp: 35 },
+        { name: "West Hollywood", risk: "moderate", population: 18000, temp: 33 },
+        { name: "Santa Monica", risk: "moderate", population: 22000, temp: 32 },
+        { name: "Malibu Hills", risk: "low", population: 8000, temp: 29 }
+      ],
+      location: "Beverly Hills, CA"
+    },
+    "33101": { // Miami
+      current: { temperature: 41, humidity: 85, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Downtown Miami", risk: "extreme", population: 52000, temp: 41 },
+        { name: "South Beach", risk: "extreme", population: 20000, temp: 40 },
+        { name: "Coconut Grove", risk: "high", population: 15000, temp: 38 },
+        { name: "Key Biscayne", risk: "moderate", population: 12000, temp: 36 }
+      ],
+      location: "Miami, FL"
+    },
+    default: {
+      current: { temperature: 38, humidity: 65, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Downtown Metro", risk: "extreme", population: 45000, temp: 38 },
+        { name: "Industrial District", risk: "high", population: 12000, temp: 36 },
+        { name: "Residential North", risk: "moderate", population: 30000, temp: 34 },
+        { name: "Green Hills", risk: "low", population: 8000, temp: 31 }
+      ],
+      location: "Metropolitan Area"
+    }
   };
+
+  const [currentAreaData, setCurrentAreaData] = useState<AreaData>(areaDatabase.default);
+  const riskData = currentAreaData;
 
   const getRiskColor = (risk: string) => {
     switch (risk) {
@@ -43,9 +93,15 @@ const RiskVisualization = () => {
   };
 
   const handleSearch = () => {
+    if (!location.trim()) return;
+    
     setIsSearching(true);
-    // Simulate API call
+    
+    // Simulate API call and lookup area data
     setTimeout(() => {
+      const areaData = areaDatabase[location as keyof typeof areaDatabase] || areaDatabase.default;
+      setCurrentAreaData(areaData);
+      setSelectedArea(areaData.areas[0].name); // Select first area as default
       setIsSearching(false);
     }, 1500);
   };
@@ -104,7 +160,7 @@ const RiskVisualization = () => {
                   <div>
                     <CardTitle className="flex items-center gap-2">
                       <MapPin className="h-5 w-5 text-blue-600" />
-                      Satellite Heat Map - {location || "Metropolitan Area"}
+                      Satellite Heat Map - {riskData.location}
                     </CardTitle>
                     <CardDescription>
                       High-resolution thermal imaging • Updated 15 min ago via NOAA GOES-16
