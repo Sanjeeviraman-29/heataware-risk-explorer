@@ -35,47 +35,155 @@ const RiskVisualization = () => {
   const [isSearching, setIsSearching] = useState(false);
   const [showCalculation, setShowCalculation] = useState(false);
 
-  // Area data for different pin codes/locations
+  // Comprehensive Indian pin code database (sample of major cities)
   const areaDatabase = {
-    "10001": { // NYC Downtown
-      current: { temperature: 39, humidity: 72, heatIndex: "Extreme", riskLevel: "extreme" as const },
+    // Delhi NCR
+    "110001": {
+      current: { temperature: 42, humidity: 68, heatIndex: "Extreme", riskLevel: "extreme" as const },
       areas: [
-        { name: "Financial District", risk: "extreme", population: 48000, temp: 39 },
-        { name: "SoHo", risk: "high", population: 15000, temp: 37 },
-        { name: "Greenwich Village", risk: "moderate", population: 28000, temp: 35 },
-        { name: "Battery Park", risk: "low", population: 6000, temp: 32 }
+        { name: "Connaught Place", risk: "extreme", population: 85000, temp: 42 },
+        { name: "Karol Bagh", risk: "extreme", population: 120000, temp: 41 },
+        { name: "Old Delhi", risk: "high", population: 95000, temp: 39 },
+        { name: "Delhi Cantonment", risk: "moderate", population: 45000, temp: 37 }
       ],
-      location: "New York City, NY"
+      location: "New Delhi, Delhi"
     },
-    "90210": { // Beverly Hills
-      current: { temperature: 35, humidity: 45, heatIndex: "High", riskLevel: "high" as const },
+    "122001": {
+      current: { temperature: 41, humidity: 65, heatIndex: "Extreme", riskLevel: "extreme" as const },
       areas: [
-        { name: "Beverly Hills Center", risk: "high", population: 25000, temp: 35 },
-        { name: "West Hollywood", risk: "moderate", population: 18000, temp: 33 },
-        { name: "Santa Monica", risk: "moderate", population: 22000, temp: 32 },
-        { name: "Malibu Hills", risk: "low", population: 8000, temp: 29 }
+        { name: "Cyber City", risk: "extreme", population: 75000, temp: 41 },
+        { name: "DLF Phase 1", risk: "high", population: 55000, temp: 39 },
+        { name: "Golf Course Road", risk: "high", population: 40000, temp: 38 },
+        { name: "Aravalli Hills", risk: "low", population: 15000, temp: 34 }
       ],
-      location: "Beverly Hills, CA"
+      location: "Gurgaon, Haryana"
     },
-    "33101": { // Miami
-      current: { temperature: 41, humidity: 85, heatIndex: "Extreme", riskLevel: "extreme" as const },
+    
+    // Mumbai
+    "400001": {
+      current: { temperature: 36, humidity: 82, heatIndex: "Extreme", riskLevel: "extreme" as const },
       areas: [
-        { name: "Downtown Miami", risk: "extreme", population: 52000, temp: 41 },
-        { name: "South Beach", risk: "extreme", population: 20000, temp: 40 },
-        { name: "Coconut Grove", risk: "high", population: 15000, temp: 38 },
-        { name: "Key Biscayne", risk: "moderate", population: 12000, temp: 36 }
+        { name: "Fort District", risk: "extreme", population: 95000, temp: 36 },
+        { name: "Marine Drive", risk: "high", population: 65000, temp: 35 },
+        { name: "Colaba", risk: "high", population: 85000, temp: 35 },
+        { name: "Nariman Point", risk: "moderate", population: 25000, temp: 33 }
       ],
-      location: "Miami, FL"
+      location: "Mumbai, Maharashtra"
     },
+    "400050": {
+      current: { temperature: 38, humidity: 78, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Bandra West", risk: "extreme", population: 125000, temp: 38 },
+        { name: "Khar", risk: "high", population: 95000, temp: 37 },
+        { name: "Santacruz", risk: "high", population: 110000, temp: 36 },
+        { name: "Juhu Beach", risk: "moderate", population: 75000, temp: 34 }
+      ],
+      location: "Bandra, Mumbai"
+    },
+    
+    // Bangalore
+    "560001": {
+      current: { temperature: 32, humidity: 55, heatIndex: "High", riskLevel: "moderate" as const },
+      areas: [
+        { name: "MG Road", risk: "moderate", population: 65000, temp: 32 },
+        { name: "Brigade Road", risk: "moderate", population: 45000, temp: 31 },
+        { name: "Cubbon Park", risk: "low", population: 15000, temp: 29 },
+        { name: "UB City", risk: "moderate", population: 35000, temp: 32 }
+      ],
+      location: "Bangalore, Karnataka"
+    },
+    "560066": {
+      current: { temperature: 33, humidity: 52, heatIndex: "High", riskLevel: "moderate" as const },
+      areas: [
+        { name: "Whitefield", risk: "moderate", population: 85000, temp: 33 },
+        { name: "ITPL", risk: "moderate", population: 45000, temp: 32 },
+        { name: "Brookefield", risk: "low", population: 25000, temp: 30 },
+        { name: "Varthur Lake", risk: "low", population: 12000, temp: 29 }
+      ],
+      location: "Whitefield, Bangalore"
+    },
+    
+    // Chennai
+    "600001": {
+      current: { temperature: 39, humidity: 75, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "George Town", risk: "extreme", population: 95000, temp: 39 },
+        { name: "Marina Beach", risk: "high", population: 65000, temp: 37 },
+        { name: "Fort St. George", risk: "high", population: 25000, temp: 38 },
+        { name: "Parry's Corner", risk: "extreme", population: 115000, temp: 39 }
+      ],
+      location: "Chennai, Tamil Nadu"
+    },
+    
+    // Hyderabad
+    "500001": {
+      current: { temperature: 40, humidity: 62, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Charminar", risk: "extreme", population: 125000, temp: 40 },
+        { name: "Hussain Sagar", risk: "high", population: 85000, temp: 38 },
+        { name: "Banjara Hills", risk: "moderate", population: 65000, temp: 36 },
+        { name: "Jubilee Hills", risk: "moderate", population: 55000, temp: 35 }
+      ],
+      location: "Hyderabad, Telangana"
+    },
+    
+    // Kolkata
+    "700001": {
+      current: { temperature: 37, humidity: 78, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "BBD Bagh", risk: "extreme", population: 105000, temp: 37 },
+        { name: "Park Street", risk: "high", population: 75000, temp: 36 },
+        { name: "Maidan", risk: "moderate", population: 35000, temp: 34 },
+        { name: "Howrah Bridge", risk: "high", population: 95000, temp: 36 }
+      ],
+      location: "Kolkata, West Bengal"
+    },
+    
+    // Pune
+    "411001": {
+      current: { temperature: 38, humidity: 58, heatIndex: "High", riskLevel: "high" as const },
+      areas: [
+        { name: "Pune Cantonment", risk: "high", population: 65000, temp: 38 },
+        { name: "Camp Area", risk: "high", population: 85000, temp: 37 },
+        { name: "Koregaon Park", risk: "moderate", population: 45000, temp: 35 },
+        { name: "Osho Ashram", risk: "moderate", population: 25000, temp: 34 }
+      ],
+      location: "Pune, Maharashtra"
+    },
+    
+    // Ahmedabad
+    "380001": {
+      current: { temperature: 44, humidity: 45, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Old City", risk: "extreme", population: 145000, temp: 44 },
+        { name: "Ellis Bridge", risk: "extreme", population: 95000, temp: 43 },
+        { name: "Sabarmati", risk: "high", population: 75000, temp: 41 },
+        { name: "Riverfront", risk: "moderate", population: 35000, temp: 38 }
+      ],
+      location: "Ahmedabad, Gujarat"
+    },
+    
+    // Jaipur
+    "302001": {
+      current: { temperature: 43, humidity: 38, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      areas: [
+        { name: "Pink City", risk: "extreme", population: 115000, temp: 43 },
+        { name: "City Palace", risk: "extreme", population: 85000, temp: 42 },
+        { name: "Amer Fort", risk: "high", population: 45000, temp: 40 },
+        { name: "Nahargarh Fort", risk: "moderate", population: 15000, temp: 37 }
+      ],
+      location: "Jaipur, Rajasthan"
+    },
+    
     default: {
-      current: { temperature: 38, humidity: 65, heatIndex: "Extreme", riskLevel: "extreme" as const },
+      current: { temperature: 38, humidity: 65, heatIndex: "High", riskLevel: "high" as const },
       areas: [
-        { name: "Downtown Metro", risk: "extreme", population: 45000, temp: 38 },
-        { name: "Industrial District", risk: "high", population: 12000, temp: 36 },
-        { name: "Residential North", risk: "moderate", population: 30000, temp: 34 },
-        { name: "Green Hills", risk: "low", population: 8000, temp: 31 }
+        { name: "City Center", risk: "high", population: 45000, temp: 38 },
+        { name: "Industrial Area", risk: "high", population: 32000, temp: 39 },
+        { name: "Residential Zone", risk: "moderate", population: 65000, temp: 36 },
+        { name: "Green Belt", risk: "low", population: 18000, temp: 33 }
       ],
-      location: "Metropolitan Area"
+      location: "India"
     }
   };
 
