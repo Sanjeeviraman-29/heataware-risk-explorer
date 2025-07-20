@@ -220,7 +220,7 @@ const Index = () => {
                 <ArrowRight className="h-5 w-5 ml-2 transition-transform group-hover:translate-x-1" />
               </Link>
             </Button>
-            <Button variant="outline" size="lg" className="text-lg px-8 border-white/30 text-white hover:bg-white/10 backdrop-blur-sm" asChild>
+            <Button variant="secondary" size="lg" className="text-lg px-8 bg-white text-black hover:bg-white/90 border-0" asChild>
               <Link to="/contact">
                 Get Support
               </Link>
